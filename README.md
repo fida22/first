@@ -33,7 +33,7 @@ All linked lists use malloc()/free() for dynamic allocation.
 ---
 
 ## 3. Code Walkthrough (C Specific)  
-```
+```C
 ### Key Struct Definitions:
 // Queue for part delivery
 typedef struct {
@@ -61,7 +61,7 @@ typedef struct CircularNode {
 ```
 ### Critical Functions:
 1. Part Delivery (Queue):
- ```
+ ```c
       void enqueue(Queue* q, char* part) {
        if (q->rear == MAX_PARTS-1) return;
        q->parts[++q->rear] = part;
@@ -69,14 +69,14 @@ typedef struct CircularNode {
  ```
 
 2. Robot Arm (Stack):
-```
+```c
       void push(Stack* s, char* part) {
        s->parts[++s->top] = part;
    }
 ```
 
 3. Garage Overflow:
-```
+```c
       void addToGarage(char* car) {
        if (garageCount == 8) {
            // Shift left to remove oldest
@@ -92,7 +92,7 @@ typedef struct CircularNode {
 ## 4. C-Specific Variables & Functions  
 
 ### Key Global Variables:
-```
+```c
 char* garage[8];          // Fixed-size garage
 int garageCount = 0;      // Current cars in garage
 SingleNode* defectiveList; // Head of defect list
@@ -112,7 +112,7 @@ CircularNode* vipList;     // Head of VIP list
 ---
 
 ## 5. Expected Output (C Program)  
-
+```c
 Robot arm picked: Engine
 Robot arm picked: Chassis
 ...
@@ -123,3 +123,4 @@ Garage full! Shipping out oldest: Car1
 Added to defective list: Car3
 Moved to repaired list: Car3
 VIP Upgrade Cycle: Car1 -> Car5 -> Car1...
+```
