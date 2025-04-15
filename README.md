@@ -1,116 +1,125 @@
-Here's the perfectly formatted Google Docs text for your Robotic Assembly Line Simulator report. Simply copy and paste this into a new Google Doc, and it will maintain professional formatting:
-
----
-
-# Robotic Assembly Line Simulator  
-## Using Data Structures  
+# Robotic Assembly Line Simulator in C  
+## Data Structures Implementation  
 Submitted by:  
-- Name: [Your Name]  
-- Roll Number: [Your Roll Number]  
-- Date: [Submission Date]  
+- Name:MOHAMMED MISHAL P  
+- Roll Number: ME24I1014
+- Date: 15/04/2025  
 
 ---
 
-## 1. Problem Statement & Objectives  
-### Problem:  
-Simulate a futuristic car manufacturing plant where robots manage part assembly, storage, and repairs using optimized data structures.  
-
+## 1. Problem Statement & C Implementation  
 ### Key Objectives:  
-✔️ Implement a Queue for part delivery  
-✔️ Use a Stack for robot arm assembly (LIFO)  
-✔️ Manage garage storage with an Array (fixed capacity)  
+✔️ Implement part delivery using Queue (FIFO)  
+✔️ Simulate robot arm with Stack (LIFO)  
+✔️ Manage garage with Array (fixed 8-slot capacity)  
 ✔️ Track defects using Singly Linked Lists  
-✔️ Handle VIP upgrades with Circular Linked Lists  
+✔️ Handle VIP cars with Circular Linked Lists  
 
 ---
 
-## 2. Design Explanation  
-### Data Structures Used  
+## 2. C Data Structures Design  
 
-| Component          | Data Structure | Reason                                                                 |
-|------------------------|--------------------|----------------------------------------------------------------------------|
-| Part Delivery          | Queue (FIFO)       | Ensures first-in-first-out part processing                                 |
-| Robot Arm Assembly     | Stack (LIFO)       | Matches real-world assembly (last part picked = first installed)           |
-| Garage Storage         | Array              | Fixed-size storage with O(1) access; oldest car removed when full          |
-| Defective Cars         | Singly Linked List | Efficient insertions/deletions for dynamic repair tracking                 |
-| Repaired Cars          | Doubly Linked List | Bidirectional traversal for quality checks                                 |
-| VIP Upgrades           | Circular Linked List| Continuous priority processing                                             |
+| Component       | C Implementation              | Why Chosen?                          |
+|---------------------|-----------------------------------|------------------------------------------|
+| Part Delivery       | Queue struct with front/rear    | Natural FIFO processing                  |
+| Robot Arm           | Stack struct with top index     | LIFO matches assembly order              |
+| Garage              | char* garage[8] array           | Simple fixed-size storage                |
+| Defective Cars      | SingleNode linked list          | Efficient dynamic insertions/deletions   |
+| VIP Cars            | CircularNode linked list        | Continuous priority processing           |
 
----
-
-## 3. Code Logic  
-### Step-by-Step Workflow  
-
-1. Part Delivery (Queue):  
-   - Parts (Engine, Chassis, etc.) enqueued  
-   - Robot arm dequeues parts → pushes to stack  
-
-2. Assembly (Stack):  
-   
-   while stack not empty:
-       part = stack.pop()
-       assemble(part)
-   
-
-3. Garage Storage (Array):  
-   - Fixed 8-slot array  
-   - Overflow handling:  
-     
-     if garage_full:
-         ship(garage[0])  # Remove oldest
-         shift_left()     # O(n) operation
-     
-
-4. Defect Tracking:  
-   - Defective cars → Singly Linked List  
-   - Repaired cars → Doubly Linked List  
-
-5. VIP Upgrades:  
-   - Circular Linked List cycles indefinitely:  
-     
-     Car1 → Car5 → Car1 → Car5...
-     
+Memory Management Note:  
+All linked lists use malloc()/free() for dynamic allocation.
 
 ---
 
-## 4. Key Variables & Functions  
-### Variables:  
-| Name            | Purpose                          |
-|---------------------|--------------------------------------|
-| conveyorBelt      | Queue for incoming parts             |
-| assemblyStack     | Stack for LIFO assembly              |
-| garage[8]         | Fixed-size garage storage            |
-| defectiveList     | Singly linked list for defective cars|
-| vipList           | Circular list for VIP cars           |
+## 3. Code Walkthrough (C Specific)  
+```
+### Key Struct Definitions:
+// Queue for part delivery
+typedef struct {
+    char* parts[MAX_PARTS];
+    int front, rear;
+} Queue;
 
-### Functions:  
-| Function         | Action                           |
-|----------------------|--------------------------------------|
-| enqueue(part)      | Adds part to conveyor belt           |
-| push(part)         | Adds part to assembly stack          |
-| addToGarage(car)   | Manages garage overflow              |
-| moveToRepaired(car)| Transfers car to repaired list       |
+// Stack for robot arm
+typedef struct {
+    char* parts[MAX_PARTS];
+    int top;
+} Stack;
+
+// Singly linked list for defects
+typedef struct SingleNode {
+    char* car;
+    struct SingleNode* next;
+} SingleNode;
+
+// Circular list for VIP
+typedef struct CircularNode {
+    char* car;
+    struct CircularNode* next;
+} CircularNode;
+```
+### Critical Functions:
+1. Part Delivery (Queue):
+ ```
+      void enqueue(Queue* q, char* part) {
+       if (q->rear == MAX_PARTS-1) return;
+       q->parts[++q->rear] = part;
+   }
+ ```
+
+2. Robot Arm (Stack):
+```
+      void push(Stack* s, char* part) {
+       s->parts[++s->top] = part;
+   }
+```
+
+3. Garage Overflow:
+```
+      void addToGarage(char* car) {
+       if (garageCount == 8) {
+           // Shift left to remove oldest
+           for (int i = 0; i < 7; i++) 
+               garage[i] = garage[i+1];
+       }
+       garage[garageCount++] = car;
+   }
+```
 
 ---
 
-## 5. Sample Output  
-*(Paste screenshot here showing:)*  
-- Part assembly sequence  
-- Garage overflow handling  
-- VIP upgrade cycles  
+## 4. C-Specific Variables & Functions  
+
+### Key Global Variables:
+```
+char* garage[8];          // Fixed-size garage
+int garageCount = 0;      // Current cars in garage
+SingleNode* defectiveList; // Head of defect list
+CircularNode* vipList;     // Head of VIP list
+```
+
+### Function Reference Table:
+
+| Function              | Parameters       | Action                              |
+|---------------------------|----------------------|-----------------------------------------|
+| enqueue(Queue*, char*)  | Queue, part name     | Adds part to conveyor belt              |
+| dequeue(Queue*)         | Queue                | Removes part for processing             |
+| addToDefective(char*)   | Car name             | Adds car to defect list (malloc used)   |
+| moveToRepaired(char*)   | Car name             | Transfers car between lists             |
+| traverseVIP(int)        | Number of rounds     | Cycles through VIP cars                 |
 
 ---
 
-## 6. Viva Preparation  
-### Expected Questions:  
+## 5. Expected Output (C Program)  
 
-❓ *"Why use a Stack for assembly?"*  
-✅ Answer: Ensures structural integrity - heavy base parts (engine/chassis) are installed first.  
-
-❓ *"Time complexity of garage overflow handling?"*  
-✅ Answer: O(n) due to array shifts, but n=8 → practically O(1).  
-
-❓ *"Alternative to Array for garage?"*  
-✅ Answer: Circular Queue (but Array simplifies oldest-car removal logic).  
-
----
+Robot arm picked: Engine
+Robot arm picked: Chassis
+...
+Assembling: Hood
+Assembling: Battery
+...
+Garage full! Shipping out oldest: Car1
+Added to defective list: Car3
+Moved to repaired list: Car3
+VIP Upgrade Cycle: Car1 -> Car5 -> Car1...
